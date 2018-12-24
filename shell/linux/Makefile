@@ -42,12 +42,13 @@ ifeq (,$(platform))
     else ifeq ($(ARCH), $(filter $(ARCH), x86_64 AMD64 amd64))
         platform = x64
     else ifneq (,$(findstring aarch64,$(ARCH)))
-        RK_BOARD = $(shell cat /sys/firmware/devicetree/base/model)
+        RK_BOARD = $(shell cat /sys/firmware/devicetree/base/model | cut -f2 -d" ")
 	ifneq (,$(grep RockPro64,$(RK_BOARD)))
 	    platform = rockpro64
 	else ifneq (,$(grep Rock64,$(RK_BOARD)))
 	    platform = rock64
-        HARDWARE = $(shell grep Hardware /proc/cpuinfo)
+        endif
+	HARDWARE = $(shell grep Hardware /proc/cpuinfo)
         ifneq (,$(findstring Vero4K,$(HARDWARE)))
             platform = vero4k
             FEATURES = $(shell grep Features /proc/cpuinfo)
@@ -240,7 +241,7 @@ else ifneq (,$(findstring vero4k,$(platform)))
     
 # RockPro64
 else ifneq (,$(findstring rockpro64,$(platform)))
-    MFLAGS += -marm -march=armv8-a+crc -mtune=cortex-a72.cortex-a53 mfpu=neon-fp-armv8 -mfloat-abi=hard -funsafe-math-optimizations -funroll-loops
+    MFLAGS += -marm -march=armv8-a+crc -mtune=cortex-a72.cortex-a53 -mfloat-abi=hard -funsafe-math-optimizations -funroll-loops
     ASFLAGS += -mfloat-abi=hard
     CFLAGS += -D TARGET_BEAGLE -D TARGET_LINUX_ARMELv7 -DARM_HARDFP -fsingle-precision-constant
     USE_GLES := 1
@@ -248,7 +249,7 @@ else ifneq (,$(findstring rockpro64,$(platform)))
 
 # Rock64
 else ifneq (,$(findstring rock64,$(platform)))
-    MFLAGS += -marm -march=armv8-a+crc -mtune=cortex-a53 mfpu=neon-fp-armv8 -mfloat-abi=hard -funsafe-math-optimizations -funroll-loops
+    MFLAGS += -marm -march=armv8-a+crc -mtune=cortex-a53 -mfloat-abi=hard -funsafe-math-optimizations -funroll-loops
     ASFLAGS += -mfloat-abi=hard
     CFLAGS += -D TARGET_BEAGLE -D TARGET_LINUX_ARMELv7 -DARM_HARDFP -fsingle-precision-constant
     USE_GLES := 1
