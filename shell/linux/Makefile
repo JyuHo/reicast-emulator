@@ -42,6 +42,7 @@ ifeq (,$(platform))
             endif
         endif
     else ifneq (,$(findstring arm,$(ARCH)))
+        RK_BOARD = $(shell cat /sys/firmware/devicetree/base/model | cut -f2 -d" ")
         HARDWARE = $(shell grep Hardware /proc/cpuinfo)
         ifneq (,$(findstring BCM2709,$(HARDWARE)))
             platform = rpi2
@@ -65,6 +66,8 @@ ifeq (,$(platform))
             platform = odroidu2
         else ifneq (,$(findstring ODROIDU2,$(HARDWARE)))
             platform = odroidu2
+	else ifneq (,$(grep RockPro64,$(RK_BOARD)))
+	    platform = rockpro64
         else
             platform = armv7h
         endif
@@ -221,6 +224,14 @@ else ifneq (,$(findstring vero4k,$(platform)))
     CFLAGS += -D TARGET_BEAGLE -D TARGET_LINUX_ARMELv7 -DARM_HARDFP -fsingle-precision-constant
     INCS += -I/opt/vero3/include/
     LIBS += -L/opt/vero3/lib/ -lEGL -lGLESv2
+    USE_GLES := 1
+    USE_SDL := 1
+
+# RockPro64
+else ifneq (,$(findstring rockpro64,$(platform)))
+    MFLAGS += -marm -march=armv8-a+crc -mtune=cortex-a72.cortex-a53 mfpu=neon-fp-armv8 -mfloat-abi=hard -funsafe-math-optimizations -funroll-loops
+    ASFLAGS += -mfloat-abi=hard
+    CFLAGS += -D TARGET_BEAGLE -D TARGET_LINUX_ARMELv7 -DARM_HARDFP -fsingle-precision-constant
     USE_GLES := 1
     USE_SDL := 1
 
