@@ -51,13 +51,8 @@ ifeq (,$(platform))
             endif
         endif
     else ifneq (,$(findstring arm,$(ARCH)))
-        RK_BOARD = $(shell cat /sys/firmware/devicetree/base/model)
-	ifneq (,$(grep RockPro64,$(RK_BOARD)))
-	    platform = rockpro64
-	else ifneq (,$(grep Rock64,$(RK_BOARD)))
-	    platform = rock64
         HARDWARE = $(shell grep Hardware /proc/cpuinfo)
-        else ifneq (,$(findstring BCM2709,$(HARDWARE)))
+        ifneq (,$(findstring BCM2709,$(HARDWARE)))
             platform = rpi2
         else ifneq (,$(findstring AM33XX,$(HARDWARE)))
             platform = beagle
@@ -235,22 +230,6 @@ else ifneq (,$(findstring vero4k,$(platform)))
     CFLAGS += -D TARGET_BEAGLE -D TARGET_LINUX_ARMELv7 -DARM_HARDFP -fsingle-precision-constant
     INCS += -I/opt/vero3/include/
     LIBS += -L/opt/vero3/lib/ -lEGL -lGLESv2
-    USE_GLES := 1
-    USE_SDL := 1
-
-# RockPro64
-else ifneq (,$(findstring rockpro64,$(platform)))
-    MFLAGS += -marm -march=armv8-a+crc -mtune=cortex-a72.cortex-a53 mfpu=neon-fp-armv8 -mfloat-abi=hard -funsafe-math-optimizations -funroll-loops
-    ASFLAGS += -mfloat-abi=hard
-    CFLAGS += -D TARGET_BEAGLE -D TARGET_LINUX_ARMELv7 -DARM_HARDFP -fsingle-precision-constant
-    USE_GLES := 1
-    USE_SDL := 1
-
-# Rock64
-else ifneq (,$(findstring rock64,$(platform)))
-    MFLAGS += -marm -march=armv8-a+crc -mtune=cortex-a53 mfpu=neon-fp-armv8 -mfloat-abi=hard -funsafe-math-optimizations -funroll-loops
-    ASFLAGS += -mfloat-abi=hard
-    CFLAGS += -D TARGET_BEAGLE -D TARGET_LINUX_ARMELv7 -DARM_HARDFP -fsingle-precision-constant
     USE_GLES := 1
     USE_SDL := 1
 
